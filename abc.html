@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Game</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style> 
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script>
+        // Setup scene
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Create platform
+        const platformGeometry = new THREE.BoxGeometry(10, 1, 10);
+        const platformMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        const platform = new THREE.Mesh(platformGeometry, platformMaterial);
+        scene.add(platform);
+
+        // Create player
+        const playerGeometry = new THREE.BoxGeometry(1, 1, 1);
+        const playerMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        const player = new THREE.Mesh(playerGeometry, playerMaterial);
+        player.position.y = 1;
+        scene.add(player);
+
+        // Create red cubes
+        const redCubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+        const redCubeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+        const redCubes = [];
+
+        // Handle player movement
+        const moveSpeed = 0.1;
+        const jumpVelocity = 0.2;
+        let jumping = false;
+
+        function handleKeyDown(event) {
+            switch (event.key) {
+                case 'ArrowLeft':
+                    player.position.x -= moveSpeed;
+                    break;
+                case 'ArrowRight':
+                    player.position.x += moveSpeed;
+                    break;
+                case ' ':
+                    if (!jumping) {
+                        jumping = true;
+                        player.position.y += jumpVelocity;
+                        setTimeout(() => {
+                            player.position.y -= jumpVelocity;
+                            jumping = false;
+                        }, 500);
+                    }
+                    break;
+            }
+        }
+        document.addEventListener('keydown', handleKeyDown);
+
+        // Main game loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Spawn red cubes randomly
+            if (Math.random() < 0.02) {
+                const redCube = new THREE.Mesh(redCubeGeometry, redCubeMaterial);
+                redCube.position.set(Math.random() * 20 - 10, 1, Math.random() * 20 - 10);
+                scene.add(redCube);
+                redCubes.push(redCube);
+            }
+
+            // Move red cubes and check collision with player
+            redCubes.forEach(cube => {
+                cube.position.z += 0.1;
+                if (cube.position.z > 10) {
+                    scene.remove(cube);
+                    redCubes.splice(redCubes.indexOf(cube), 1);
+                }
+                if (cube.position.distanceTo(player.position) < 1) {
+                    alert("Game Over!");
+                    window.location.reload();
+                }
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        camera.position.set(0, 5, 15); // Move camera up and back
+        camera.lookAt(10, 10, 10); // Tilt camera to look at the center of the platform
+        animate();
+    </script>
+</body>
+</html>

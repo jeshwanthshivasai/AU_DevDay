@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>3D Game</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #222;
+      }
+      #game-container {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #game {
+        width: 600px;
+        height: 400px;
+        position: relative;
+        perspective: 1000px;
+      }
+      #platform {
+        width: 600px;
+        height: 100px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        background-color: #444;
+        transform: rotateX(90deg);
+      }
+      #cube {
+        width: 100px;
+        height: 100px;
+        position: absolute;
+        bottom: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #f00;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game-container">
+      <div id="game">
+        <div id="platform"></div>
+        <div id="cube"></div>
+      </div>
+    </div>
+    <script>
+      const game = document.getElementById('game');
+      const platform = document.getElementById('platform');
+      const cube = document.getElementById('cube');
+  
+      let platformTop = 0;
+      let cubeTop = 0;
+  
+      const moveUp = () => {
+        platformTop -= 10;
+        cubeTop -= 10;
+        platform.style.transform = `rotateX(${90}deg) translateY(${platformTop}px)`;
+        cube.style.transform = `translateX(-50%) translateY(${cubeTop}px)`;
+      }
+  
+      const moveLeft = () => {
+        platformTop -= 10;
+        cubeTop -= 10;
+        platform.style.transform = `rotateX(${90}deg) translateY(${platformTop}px)`;
+        cube.style.transform = `translateX(${cube.offsetLeft - 10}px) translateY(${cubeTop}px)`;
+      }
+  
+      const moveRight = () => {
+        platformTop -= 10;
+        cubeTop -= 10;
+        platform.style.transform = `rotateX(${90}deg) translateY(${platformTop}px)`;
+        cube.style.transform = `translateX(${cube.offsetLeft + 10}px) translateY(${cubeTop}px)`;
+      }
+  
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowUp') {
+          moveUp();
+        } else if (event.key === 'ArrowLeft') {
+          moveLeft();
+        } else if (event.key === 'ArrowRight') {
+          moveRight();
+        }
+      });
+    </script>
+  </body>
+</html>

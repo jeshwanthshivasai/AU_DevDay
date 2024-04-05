@@ -1,0 +1,6 @@
+create a 3d rectangular platform around which the camera can be orbited freely.
+There are red cubes moving from one side of the platform where the red cubes spawn 
+randomly and there is green cube on the platform whose functionalty is to avoid those 
+passing red cubes by moving up with the up arrow key and moving left and right using left 
+and right arrow keys. Also when the green cube is moved up using the up arrow key there is 
+a shadow of the green cube casted on the platform using html.

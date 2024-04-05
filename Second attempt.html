@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Platform</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <h1>Game</h1>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Setup scene
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Create platform
+        const platformSize = { width: 10, height: 1, depth: 10 };
+        const platformGeometry = new THREE.BoxGeometry(platformSize.width, platformSize.height, platformSize.depth);
+        const platformMaterial = new THREE.MeshBasicMaterial({ color: 0x808080 });
+        const platform = new THREE.Mesh(platformGeometry, platformMaterial);
+        scene.add(platform);
+
+        // Create green cube (player)
+        const playerSize = 1;
+        const playerGeometry = new THREE.BoxGeometry(playerSize, playerSize, playerSize);
+        const playerMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        const player = new THREE.Mesh(playerGeometry, playerMaterial);
+        player.position.y = playerSize / 2; // Position above the platform
+        scene.add(player);
+
+        // Create red cubes (obstacles)
+        const redCubes = [];
+        function spawnRedCube() {
+            const redCubeSize = 1;
+            const redCubeGeometry = new THREE.BoxGeometry(redCubeSize, redCubeSize, redCubeSize);
+            const redCubeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+            const redCube = new THREE.Mesh(redCubeGeometry, redCubeMaterial);
+            redCube.position.set(Math.random() * platformSize.width - platformSize.width / 2, redCubeSize / 2, Math.random() * platformSize.depth - platformSize.depth / 2);
+            redCubes.push(redCube);
+            scene.add(redCube);
+        }
+
+        // Movement controls for the green cube
+        document.addEventListener('keydown', (event) => {
+            const speed = 0.1;
+            switch (event.code) {
+                case 'ArrowUp':
+                    player.position.y += speed;
+                    break;
+                case 'ArrowLeft':
+                    player.position.x -= speed;
+                    break;
+                case 'ArrowRight':
+                    player.position.x += speed;
+                    break;
+            }
+        });
+
+        // Render loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Update position of red cubes
+            for (const redCube of redCubes) {
+                redCube.position.z += 0.05; // Move towards camera
+                if (redCube.position.z > platformSize.depth / 2) {
+                    scene.remove(redCube);
+                    redCubes.splice(redCubes.indexOf(redCube), 1);
+                    spawnRedCube();
+                }
+            }
+
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>
